@@ -341,24 +341,59 @@
 
   // ─── Intégration Grist ───────────────────────────────────────────────────────
   grist.ready({
-    // Déclare les colonnes dont on a besoin (Grist va les mapper)
     columns: [{ name: 'Ville', title: 'Ville', type: 'Text' }],
     requiredAccess: 'read table'
   });
 
-  // Quand l'utilisateur sélectionne une ligne dans Grist
-  grist.onRecord(function(record) {
-    if (!record) {
-      displayWeather(null);
-      return;
-    }
-    // Cherche le champ "Ville" (ou "ville" ou "city" – insensible à la casse)
-    const cityField =
-      record.Ville || record.ville || record.City || record.city ||
-      Object.values(record).find(v => typeof v === 'string' && v.length > 1);
+  function extractCity(record) {
+    if (!record) return null;
+    return record.Ville || record.ville || record.City || record.city ||
+      Object.values(record).find(v => typeof v === 'string' && v.length > 1) || null;
+  }
 
-    displayWeather(cityField || null);
+  // Méthode 1 : ligne activée (double-clic)
+  grist.onRecord(function(record) {
+    const city = extractCity(record);
+    if (city) displayWeather(city);
   });
+
+  // Méthode 2 : sélection curseur (clic simple) — écoute via onRecords + setCursorPos
+  grist.onRecords(function(records, mappings) {
+    // Rien ici, juste pour forcer Grist à nous donner accès aux données
+  });
+
+  // Méthode 3 : écouter les messages de Grist (sélection de ligne)
+  window.addEventListener('message', function(event) {
+    const msg = event.data;
+    if (!msg) return;
+
+    // Grist envoie un message quand le curseur change
+    if (msg.type === 'cursorPos' && msg.rowId) {
+      grist.getTable().then(table => {
+        return table.fetchRecords();
+      }).catch(() => {});
+    }
+
+    // Format alternatif
+    if (msg.tableId && msg.rowId !== undefined) {
+      grist.fetchSelectedRecord().then(record => {
+        const city = extractCity(record);
+        if (city) displayWeather(city);
+      }).catch(() => {});
+    }
+  });
+
+  // Méthode 4 : polling sur fetchSelectedRecord (fallback fiable)
+  let lastCity = null;
+  setInterval(function() {
+    grist.fetchSelectedRecord().then(function(record) {
+      const city = extractCity(record);
+      if (city && city !== lastCity) {
+        lastCity = city;
+        displayWeather(city);
+      }
+    }).catch(() => {});
+  }, 800);
 </script>
 
 </body>
