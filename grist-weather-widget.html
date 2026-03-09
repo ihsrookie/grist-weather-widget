@@ -228,14 +228,7 @@
         <div class="stat-label">Humidité</div>
         <div class="stat-value"><span id="humidity">—</span>%</div>
       </div>
-      <div class="stat">
-        <div class="stat-label">Vent</div>
-        <div class="stat-value"><span id="wind">—</span> km/h</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">Pression</div>
-        <div class="stat-value"><span id="pressure">—</span> hPa</div>
-      </div>
+     
     </div>
     <div class="footer" id="lastUpdate">—</div>
   </div>
@@ -287,7 +280,7 @@
 
   // ─── Récupérer la météo (Open-Meteo, gratuit, sans clé API) ─────────────────
   async function getWeather(lat, lon) {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,surface_pressure,weather_code&wind_speed_unit=kmh`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code`;
     const res = await fetch(url);
     return await res.json();
   }
