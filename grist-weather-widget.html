@@ -1,391 +1,176 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Météo Widget – Grist</title>
-
-  <!-- Grist Plugin API -->
+  <title>Widget Météo</title>
   <script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
-
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
-
-    :root {
-      --bg: #0b0f1a;
-      --card: #111827;
-      --border: #1e2d45;
-      --accent: #38bdf8;
-      --accent2: #818cf8;
-      --text: #e2e8f0;
-      --muted: #64748b;
-      --radius: 16px;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
-      font-family: 'Syne', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
+      background-color: #e8f4fd;
+      font-family: Arial, sans-serif;
       display: flex;
-      align-items: center;
       justify-content: center;
-      padding: 24px;
-    }
-
-    .widget {
-      width: 100%;
-      max-width: 420px;
-    }
-
-    /* ---- Header ---- */
-    .header {
-      display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 24px;
+      height: 100vh;
+      margin: 0;
     }
-    .header-icon {
+    
+    .carte {
+      background-color: #5baee8;
+      border-radius: 15px;
+      padding: 30px;
+      width: 300px;
+      color: white;
+    }
+    
+    .ville {
       font-size: 28px;
-      animation: spin 8s linear infinite;
+      font-weight: bold;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .header h1 {
-      font-size: 1.25rem;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .header small {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.65rem;
-      color: var(--muted);
-      display: block;
-    }
-
-    /* ---- Status pill ---- */
-    #status {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.7rem;
-      padding: 6px 14px;
-      border-radius: 99px;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      margin-bottom: 20px;
-      display: inline-block;
-      transition: all 0.3s;
-    }
-    #status.active {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-    #status.error {
-      border-color: #f87171;
-      color: #f87171;
-    }
-
-    /* ---- Card météo ---- */
-    .weather-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px;
-      display: none;
-      animation: fadeIn 0.4s ease;
-    }
-    .weather-card.visible { display: block; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .city-name {
-      font-size: 1.5rem;
-      font-weight: 800;
-      letter-spacing: -1px;
-      margin-bottom: 4px;
-    }
-    .country {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 2px;
+    .pays {
+      font-size: 14px;
+      color: #dff0fb;
       margin-bottom: 20px;
     }
-
-    .temp-row {
+    
+    .meteo-row {
       display: flex;
       align-items: center;
-      gap: 16px;
-      margin-bottom: 20px;
+      gap: 15px;
+      margin-bottom: 30px;
     }
-    .weather-icon {
-      font-size: 56px;
+    .icone {
+      font-size: 64px;
+    }
+    .temperature {
+      font-size: 48px;
+      font-weight: bold;
       line-height: 1;
-      filter: drop-shadow(0 0 12px rgba(56,189,248,0.4));
-    }
-    .temp-main {
-      font-size: 3.5rem;
-      font-weight: 800;
-      letter-spacing: -3px;
-      line-height: 1;
-    }
-    .temp-unit {
-      font-size: 1.2rem;
-      color: var(--muted);
-      font-weight: 400;
     }
     .description {
-      font-size: 0.95rem;
-      color: var(--muted);
-      text-transform: capitalize;
-      margin-top: 4px;
+      font-size: 14px;
+      color: #dff0fb;
+      margin-top: 5px;
     }
-
-    /* ---- Grid stats ---- */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 8px;
-    }
-    .stat {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px 14px;
-    }
-    .stat-label {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.6rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin-bottom: 4px;
-    }
-    .stat-value {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--accent);
-    }
-
-    /* ---- Footer ---- */
-    .footer {
+    
+    .grille {
+      display: flex;
+      justify-content: space-around;
       margin-top: 20px;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.62rem;
-      color: var(--muted);
-      text-align: center;
-      opacity: 0.5;
+      background-color: #3d96d8;
+      border-radius: 10px;
+      padding: 15px;
     }
-
-    /* ---- Placeholder ---- */
-    .placeholder {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--muted);
+    .info-label {
+      font-size: 12px;
+      color: #dff0fb;
     }
-    .placeholder .big-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.4; }
-    .placeholder p { font-size: 0.85rem; line-height: 1.6; }
+    .info-valeur {
+      font-size: 20px;
+      font-weight: bold;
+    }
   </style>
 </head>
+  
 <body>
-
-<div class="widget">
-  <div class="header">
-    <div>
-      <h1>Météo en temps réel</h1>
-    </div>
-  </div>
-
-  <div id="status">En attente de Grist…</div>
-
-  <!-- Météo -->
-  <div class="weather-card" id="weatherCard">
-    <div class="city-name" id="cityName">—</div>
-    <div class="country" id="countryCode">—</div>
-    <div class="temp-row">
-      <div class="weather-icon" id="weatherIcon">🌡️</div>
+  <div class="carte">
+   
+    <div class="ville" id="ville">Chargement...</div>
+    <div class="pays" id="pays"></div>
+    
+    <div class="meteo-row">
+      <div class="icone" id="icone">⏳</div>
       <div>
-        <div class="temp-main">
-          <span id="tempValue">—</span><span class="temp-unit">°C</span>
-        </div>
-        <div class="description" id="weatherDesc">—</div>
+        <div class="temperature" id="temperature">--°C</div>
+        <div class="description" id="description">--</div>
       </div>
     </div>
-    <div class="stats-grid">
-      <div class="stat">
-        <div class="stat-label">Ressenti</div>
-        <div class="stat-value"><span id="feelsLike">—</span>°C</div>
+    
+    <div class="grille">
+      <div>
+        <div class="info-label">Ressenti</div>
+        <div class="info-valeur" id="ressenti">--</div>
       </div>
-      <div class="stat">
-        <div class="stat-label">Humidité</div>
-        <div class="stat-value"><span id="humidity">—</span>%</div>
+      <div>
+        <div class="info-label">Humidité</div>
+        <div class="info-valeur" id="humidite">--</div>
       </div>
-     
-    </div>
-    <div class="footer" id="lastUpdate">—</div>
+    </div>  
   </div>
-
-  <!-- Placeholder quand pas de ville sélectionnée -->
-  <div class="placeholder" id="placeholder">
-    <div class="big-icon">🏙️</div>
-    <p>Sélectionne une ligne dans ta table Grist<br>contenant une colonne <strong>Ville</strong></p>
-  </div>
-</div>
-
-<script>
-  // ─── Icônes météo selon le code WMO ────────────────────────────────────────
-  function getWeatherIcon(code) {
-    if (code === 0) return '☀️';
-    if (code <= 2) return '🌤️';
-    if (code === 3) return '☁️';
-    if (code <= 48) return '🌫️';
-    if (code <= 57) return '🌦️';
-    if (code <= 67) return '🌧️';
-    if (code <= 77) return '❄️';
-    if (code <= 82) return '🌧️';
-    if (code <= 86) return '🌨️';
-    if (code <= 99) return '⛈️';
-    return '🌡️';
-  }
-
-  function getWeatherDesc(code) {
-    const map = {
-      0: 'Ciel dégagé', 1: 'Principalement dégagé', 2: 'Partiellement nuageux',
-      3: 'Couvert', 45: 'Brouillard', 48: 'Givre', 51: 'Bruine légère',
-      53: 'Bruine modérée', 55: 'Bruine dense', 61: 'Pluie légère',
-      63: 'Pluie modérée', 65: 'Pluie forte', 71: 'Neige légère',
-      73: 'Neige modérée', 75: 'Neige forte', 80: 'Averses légères',
-      81: 'Averses modérées', 82: 'Averses violentes', 95: 'Orage',
-      96: 'Orage avec grêle', 99: 'Orage violent'
-    };
-    return map[code] || 'Conditions inconnues';
-  }
-
-  // ─── Récupérer les coordonnées d'une ville (Open-Meteo Geocoding) ───────────
-  async function getCoords(city) {
-    const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=fr&format=json`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if (!data.results || data.results.length === 0) throw new Error('Ville introuvable');
-    return data.results[0]; // { latitude, longitude, name, country_code }
-  }
-
-  // ─── Récupérer la météo (Open-Meteo, gratuit, sans clé API) ─────────────────
-  async function getWeather(lat, lon) {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code`;
-    const res = await fetch(url);
-    return await res.json();
-  }
-
-  // ─── Mettre à jour l'UI ──────────────────────────────────────────────────────
-  function setStatus(msg, type = '') {
-    const el = document.getElementById('status');
-    el.textContent = msg;
-    el.className = type;
-  }
-
-  async function displayWeather(cityInput) {
-    if (!cityInput || cityInput.trim() === '') {
-      document.getElementById('weatherCard').classList.remove('visible');
-      document.getElementById('placeholder').style.display = 'block';
-      setStatus('En attente d\'une sélection…');
-      return;
+  
+  <script>
+    grist.ready({
+      columns[{ name: "Ville", title: "Ville", type: "Text"}],
+      requiredAccess: "read table"
+    });
+    
+    grist.onRecord(function(record) {
+      var nomVille = record.Ville;
+      
+      afficherMeteo(nomVille);
+    });
+    
+    function afficherMeteo(nomVille) {
+      
+      fetch("https://geocoding-api.open-meteo.com/v1/search?name=" + nomVille + "&count=1&language=fr&format=json")
+      .then(function(reponse) {
+      return reponse.json();
+    })
+    .then(function(data) {
+      var lat = data.results[0].latitude;
+      var lon = data.results[0].longitude;
+      var nom = data.results[0].name;
+      var pays = data.results[0].country_code;
+      
+      document.getElementById("ville").textContent = nom;
+      document.getElementById("pays").textContent = pays;
+      
+      return fetch("https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lon + "&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code");
+      })
+    .then(function(reponse) {
+      return reponse.json();
+    })
+    .then(function(data) {
+      var temp = Math.round(data.current.temperature_2m);
+      var ressenti = Math.round(data.current.apparent_temperature);
+      var humidite = data.current.relative_humidity_2m;
+      var code = data.current.weather_code;
+      
+      document.getElementById("temperature").textContent = temp + "°C"
+      document.getElementById("ressenti").textContent = ressenti + "°C"
+      document.getElementById("humidite").textContent = humidite + "%"
+      document.getElementById("icone").textContent = getIcone(code);
+      document.getElementById("description").textContent = getDescription(code);
+    });
+      
     }
-
-    setStatus('Chargement…', 'active');
-    document.getElementById('placeholder').style.display = 'none';
-
-    try {
-      const geo = await getCoords(cityInput.trim());
-      const weather = await getWeather(geo.latitude, geo.longitude);
-      const c = weather.current;
-
-      document.getElementById('cityName').textContent = geo.name;
-      document.getElementById('countryCode').textContent = geo.country_code || '';
-      document.getElementById('tempValue').textContent = Math.round(c.temperature_2m);
-      document.getElementById('feelsLike').textContent = Math.round(c.apparent_temperature);
-      document.getElementById('humidity').textContent = c.relative_humidity_2m;
-      document.getElementById('wind').textContent = Math.round(c.wind_speed_10m);
-      document.getElementById('pressure').textContent = Math.round(c.surface_pressure);
-      document.getElementById('weatherIcon').textContent = getWeatherIcon(c.weather_code);
-      document.getElementById('weatherDesc').textContent = getWeatherDesc(c.weather_code);
-      document.getElementById('lastUpdate').textContent =
-        'Mis à jour : ' + new Date().toLocaleTimeString('fr-FR');
-
-      document.getElementById('weatherCard').classList.add('visible');
-      setStatus('✓ ' + geo.name + ', ' + geo.country_code, 'active');
-
-    } catch (err) {
-      setStatus('⚠ ' + err.message, 'error');
-      document.getElementById('weatherCard').classList.remove('visible');
-      document.getElementById('placeholder').style.display = 'block';
+    
+    
+    function getIcone(code) {
+      if (code === 0)  return "☀️";
+      if (code <= 2)   return "🌤️";
+      if (code === 3)  return "☁️";
+      if (code <= 48)  return "🌫️";
+      if (code <= 67)  return "🌧️";
+      if (code <= 77)  return "❄️";
+      if (code <= 82)  return "🌧️";
+      if (code <= 99)  return "⛈️";
+      return "🌡️";
     }
-  }
-
-  // ─── Intégration Grist ───────────────────────────────────────────────────────
-  grist.ready({
-    columns: [{ name: 'Ville', title: 'Ville', type: 'Text' }],
-    requiredAccess: 'read table'
-  });
-
-  function extractCity(record) {
-    if (!record) return null;
-    return record.Ville || record.ville || record.City || record.city ||
-      Object.values(record).find(v => typeof v === 'string' && v.length > 1) || null;
-  }
-
-  // Méthode 1 : ligne activée (double-clic)
-  grist.onRecord(function(record) {
-    const city = extractCity(record);
-    if (city) displayWeather(city);
-  });
-
-  // Méthode 2 : sélection curseur (clic simple) — écoute via onRecords + setCursorPos
-  grist.onRecords(function(records, mappings) {
-    // Rien ici, juste pour forcer Grist à nous donner accès aux données
-  });
-
-  // Méthode 3 : écouter les messages de Grist (sélection de ligne)
-  window.addEventListener('message', function(event) {
-    const msg = event.data;
-    if (!msg) return;
-
-    // Grist envoie un message quand le curseur change
-    if (msg.type === 'cursorPos' && msg.rowId) {
-      grist.getTable().then(table => {
-        return table.fetchRecords();
-      }).catch(() => {});
+    
+    function getDescription(code) {
+      if (code === 0)  return "Ciel dégagé";
+      if (code <= 2)   return "Principalement dégagé";
+      if (code === 3)  return "Couvert";
+      if (code <= 48)  return "Brouillard";
+      if (code <= 67)  return "Pluie";
+      if (code <= 77)  return "Neige";
+      if (code <= 82)  return "Averses";
+      if (code <= 99)  return "Orage";
+      return "Inconnu";
     }
-
-    // Format alternatif
-    if (msg.tableId && msg.rowId !== undefined) {
-      grist.fetchSelectedRecord().then(record => {
-        const city = extractCity(record);
-        if (city) displayWeather(city);
-      }).catch(() => {});
-    }
-  });
-
-  // Méthode 4 : polling sur fetchSelectedRecord (fallback fiable)
-  let lastCity = null;
-  setInterval(function() {
-    grist.fetchSelectedRecord().then(function(record) {
-      const city = extractCity(record);
-      if (city && city !== lastCity) {
-        lastCity = city;
-        displayWeather(city);
-      }
-    }).catch(() => {});
-  }, 800);
-</script>
-
+  </script>
+  
 </body>
 </html>
