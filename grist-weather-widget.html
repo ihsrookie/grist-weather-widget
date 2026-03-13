@@ -297,16 +297,14 @@
       var temperature = document.getElementById("popupTemperature").textContent;
       var temps = document.getElementById("popupTemps").textContent;
   
-      grist.getTable("sauvegarde").then(function(table) {
-        return table.create({
-          fields: {
-            ville : ville,
-            date_sauvegarde : date,
-            temperature : temperature,
-            temps : temps
-          }
-        });
-      })
+      grist.docApi.applyUserActions([
+        ["AddRecord", "sauvegarde", null, {
+          "ville"           : ville,
+          "date_sauvegarde" : date,
+          "temperature"     : temperature,
+          "temps"           : temps
+        }]
+      ])
       
   .then(function(){
     fermerPopup();
