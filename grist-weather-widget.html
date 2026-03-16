@@ -296,7 +296,26 @@
       var date = document.getElementById("popupDate").textContent;
       var temperature = document.getElementById("popupTemperature").textContent;
       var temps = document.getElementById("popupTemps").textContent;
-     
+      fetch("https://eorbpd7qba7j597.m.pipedream.net", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ville : ville,
+          date_sauvegarde : date,
+          temperature : temperature,
+          temps : temps
+        })
+      })
+      .then(function(){
+        fermerPopup();
+        alert("Sauvegarde effectuée");
+      })
+      .catch(function(erreur) {
+        alert("Erreur : "+ erreur);
+      });
+/*     
       var cleAPI = "51cf534a42713285edba9d3f001d8b6e4febb5bb";
       var docID = "2e7oHLmg4aNk";
       var url = "https://docs.getgrist.com/api/docs/" + docID + "/tables/Sauvegarde/records";
@@ -321,7 +340,7 @@
           ]
         })
       })
-     
+*/     
      /*
       grist.docApi.applyUserActions([
         ["AddRecord", "Sauvegarde", null, {
@@ -332,13 +351,6 @@
         }]
       ])
      */ 
-  .then(function(){
-    fermerPopup();
-    alert("Sauvegarde effectuée");
-  })
-  .catch(function(erreur) {
-    alert("Erreur : "+ erreur);
-  });  
   }
   </script>
   
