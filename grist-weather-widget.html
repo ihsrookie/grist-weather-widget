@@ -299,7 +299,8 @@
       fetch("https://eohw5mv712aiwgv.m.pipedream.net", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": "Bearer meteo2026secret"
         },
         body: JSON.stringify({
           ville : ville,
